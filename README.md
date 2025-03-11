@@ -42,94 +42,94 @@ bool GuitarPro1::read(IODevice* io)
 }
 ```
     
-    src/importexport/guitarpro/internal/importgtp.h
+src/importexport/guitarpro/internal/importgtp.h
     
-    ```c
-    	namespace mu::iex::guitarpro {
+```
+namespace mu::iex::guitarpro {
     static constexpr int GP_MAX_LYRIC_LINES = 5;   
     static constexpr int GP_MAX_TRACK_NUMBER = 32;
     static constexpr int GP_MAX_STRING_NUMBER = 7;    // [4]
-    ```
+```
     
-    1. **Array Declaration with Fixed Size:**
-    In step [1], an array is declared with a constant size. The size of this array is confirmed to be 7 in step [4].
-    2. **Determination of Strings Value Based on Version:**
-    In step [2], if the ‘`version`' is greater than 101, the value of ‘`strings`' is determined through ‘`readInt`'.
-    Therefore, by setting the ‘`version`' to greater than 101, the ‘`strings`' value can be set greater than the array size of 7,
-    causing a stack buffer overflow.
-    3. **Injection of Malicious Data into Buffer:**
-    In step [3], an attacker can input desired values into the buffer.
+1. **Array Declaration with Fixed Size:**
+In step [1], an array is declared with a constant size. The size of this array is confirmed to be 7 in step [4].
+2. **Determination of Strings Value Based on Version:**
+In step [2], if the ‘`version`' is greater than 101, the value of ‘`strings`' is determined through ‘`readInt`'.
+Therefore, by setting the ‘`version`' to greater than 101, the ‘`strings`' value can be set greater than the array size of 7,
+causing a stack buffer overflow.
+3. **Injection of Malicious Data into Buffer:**
+In step [3], an attacker can input desired values into the buffer.
     
-    In the ‘`importScore`' function within the ‘`src/importexport/guitarpro/internal/importgtp.cpp`' file,
-    the GuitarPro file is parsed. This function verifies the signature and version of the GuitarPro
-    file and then parses the data using the appropriate ‘`read`' function based on the version.
-    If the version is 1.??, it calls the vulnerable ‘`GuitarPro1::read`' function.
+In the ‘`importScore`' function within the ‘`src/importexport/guitarpro/internal/importgtp.cpp`' file,
+the GuitarPro file is parsed. This function verifies the signature and version of the GuitarPro
+file and then parses the data using the appropriate ‘`read`' function based on the version.
+If the version is 1.??, it calls the vulnerable ‘`GuitarPro1::read`' function.
     
-    To prevent this vulnerability, add code to compare the ‘`strings`' value with ‘`GP_MAX_STRING_NUMBER`'
-    after receiving the ‘`strings`' value as input. If the ‘`strings`' value is greater than the buffer size,
-    handle the exception accordingly.
+To prevent this vulnerability, add code to compare the ‘`strings`' value with ‘`GP_MAX_STRING_NUMBER`'
+after receiving the ‘`strings`' value as input. If the ‘`strings`' value is greater than the buffer size,
+handle the exception accordingly.
     
-    Below is the ‘`importScore`' function from the ‘`src/importexport/guitarpro/internal/importgtp.cpp`' file mentioned above.
+Below is the ‘`importScore`' function from the ‘`src/importexport/guitarpro/internal/importgtp.cpp`' file mentioned above.
     
-    ```c
-    static Err importScore(MasterScore* score, muse::io::IODevice* io, bool experimental = false)
-    {
-        if (!io->open(IODevice::ReadOnly)) {
-            return Err::FileOpenError;
+```c
+static Err importScore(MasterScore* score, muse::io::IODevice* io, bool experimental = false)
+{
+    if (!io->open(IODevice::ReadOnly)) {
+        return Err::FileOpenError;
+    }
+    
+    score->loadStyle(u":/engraving/styles/gp-style.mss");
+    if (experimental) {
+        score->loadStyle(u":/engraving/styles/gp-style-experimental.mss");
+    }
+    
+    score->checkChordList();
+    io->seek(0);
+    char header[5];
+    io->read((uint8_t*)(header), 4);
+    header[4] = 0;
+    io->seek(0);
+    if (strcmp(header, "ptab") == 0) {
+        PowerTab ptb(io, score);
+        return ptb.read();
+    }
+    
+    ...
+    
+    // otherwise it's an older version - check the header
+    else if (strcmp(&header[1], "FIC") == 0) {
+        uint8_t l;
+        io->read((uint8_t*)&l, 1);
+        char ss[30];
+        io->read((uint8_t*)(ss), 30);
+        ss[l] = 0;
+        String s = String::fromUtf8(ss);
+        if (s.startsWith(u"FICHIER GUITAR PRO ")) {
+            s = s.mid(20);
+        } else if (s.startsWith(u"FICHIER GUITARE PRO ")) {
+            s = s.mid(21);
+        } else {
+            LOGD("unknown gtp format <%s>", ss);
+            return Err::FileBadFormat;
         }
-    
-        score->loadStyle(u":/engraving/styles/gp-style.mss");
-        if (experimental) {
-            score->loadStyle(u":/engraving/styles/gp-style-experimental.mss");
+        int a = s.left(1).toInt();
+        int b = s.mid(2).toInt();
+        int version = a * 100 + b;
+        if (a == 1) {
+            gp = new GuitarPro1(score, version);
+        } else if (a == 2) {
+            gp = new GuitarPro2(score, version);
+        } else if (a == 3) {
+            gp = new GuitarPro3(score, version);
+        } else if (a == 4) {
+            gp = new GuitarPro4(score, version);
+        } else if (a == 5) {
+            gp = new GuitarPro5(score, version);
+        } else {
+            LOGD("unknown gtp format %d", version);
+            return Err::FileBadFormat;
         }
-    
-        score->checkChordList();
-        io->seek(0);
-        char header[5];
-        io->read((uint8_t*)(header), 4);
-        header[4] = 0;
-        io->seek(0);
-        if (strcmp(header, "ptab") == 0) {
-            PowerTab ptb(io, score);
-            return ptb.read();
-        }
-    
-    		...
-    
-        // otherwise it's an older version - check the header
-        else if (strcmp(&header[1], "FIC") == 0) {
-            uint8_t l;
-            io->read((uint8_t*)&l, 1);
-            char ss[30];
-            io->read((uint8_t*)(ss), 30);
-            ss[l] = 0;
-            String s = String::fromUtf8(ss);
-            if (s.startsWith(u"FICHIER GUITAR PRO ")) {
-                s = s.mid(20);
-            } else if (s.startsWith(u"FICHIER GUITARE PRO ")) {
-                s = s.mid(21);
-            } else {
-                LOGD("unknown gtp format <%s>", ss);
-                return Err::FileBadFormat;
-            }
-            int a = s.left(1).toInt();
-            int b = s.mid(2).toInt();
-            int version = a * 100 + b;
-            if (a == 1) {
-                gp = new GuitarPro1(score, version);
-            } else if (a == 2) {
-                gp = new GuitarPro2(score, version);
-            } else if (a == 3) {
-                gp = new GuitarPro3(score, version);
-            } else if (a == 4) {
-                gp = new GuitarPro4(score, version);
-            } else if (a == 5) {
-                gp = new GuitarPro5(score, version);
-            } else {
-                LOGD("unknown gtp format %d", version);
-                return Err::FileBadFormat;
-            }
-            readResult = gp->read(io); //guitarpro1::read
+        readResult = gp->read(io); //guitarpro1::read
     ```
     
 # Proof-of-Concept
