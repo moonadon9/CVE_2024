@@ -19,6 +19,7 @@ It is essential to address and fix this vulnerability promptly to prevent potent
 # Exact product that was found to be vulnerable including complete version information
     
 **MuseScore Studio 64-bit ver 4.3.2**
+
 **Proof Environment : windows10, windows11**
     
 # Root Cause Analysis (recommended but not required)
@@ -134,24 +135,24 @@ static Err importScore(MasterScore* score, muse::io::IODevice* io, bool experime
     
 # Proof-of-Concept
     
-    The proof-of-concept includes two files, both demonstrating arbitrary code execution by launching the calculator.
+The proof-of-concept includes two files, both demonstrating arbitrary code execution by launching the calculator.
     
-    ## Verification Environment
+## Verification Environment
     
-    The verification was conducted on the following environments:
+The verification was conducted on the following environments:
     
-    - Windows 11 Version 23H2 (OS build 22631.3737)
-    - Windows 11 Version 23H2 (OS build 22631.3447)
-    - Windows 10 Version 22H2 (OS build 19045.4529)
+- Windows 11 Version 23H2 (OS build 22631.3737)
+- Windows 11 Version 23H2 (OS build 22631.3447)
+- Windows 10 Version 22H2 (OS build 19045.4529)
     
-    ## Proof-of-Concept Details
+## Proof-of-Concept Details
     
-    - **musescore_exploit_doubleclick.gtp**: This file can be verified by double-clicking it to run the program in MuseScore.
-    - **musescore_exploit_inopen.gtp**: This file can be verified by first launching the MuseScore program,
-    then navigating to File → Open in the top left, and opening the file.
+- **musescore_exploit_doubleclick.gtp**: This file can be verified by double-clicking it to run the program in MuseScore.
+- **musescore_exploit_inopen.gtp**: This file can be verified by first launching the MuseScore program,
+then navigating to File → Open in the top left, and opening the file.
     
-    The proof-of-concept is accompanied by demonstration videos. For verification steps, please refer to the demonstration videos.
-    Proof-of-concept files and videos are attached.
+The proof-of-concept is accompanied by demonstration videos. For verification steps, please refer to the demonstration videos.
+Proof-of-concept files and videos are attached.
 
 # code patch
 It has been patched in MuseScore Studio 64-bit ver 4.4.4
