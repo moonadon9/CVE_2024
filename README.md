@@ -1,11 +1,12 @@
-# CVE_2024
+# CVE_2024_44866
 
 # Vulnerability Title
 MuseScore Arbitrary Code Execution Vulnerability Due to Stack Buffer Overflow
     
 # High-level overview of the vulnerability and the possible effect of using it
     
-    A critical vulnerability has been identified in the ‘tuning’ array within the ‘GuitarPro1::read’ function in the ‘importgtp.cpp’ file. This stack buffer overflow can be exploited by attackers to execute arbitrary code, potentially leading to severe security issues.
+    A critical vulnerability has been identified in the ‘tuning’ array within the ‘GuitarPro1::read’ function in the ‘importgtp.cpp’ file.
+    This stack buffer overflow can be exploited by attackers to execute arbitrary code, potentially leading to severe security issues.
     
     Exploiting this vulnerability allows attackers to gain control of the system, resulting in:
     
@@ -53,13 +54,20 @@ MuseScore Arbitrary Code Execution Vulnerability Due to Stack Buffer Overflow
     1. **Array Declaration with Fixed Size:**
     In step [1], an array is declared with a constant size. The size of this array is confirmed to be 7 in step [4].
     2. **Determination of Strings Value Based on Version:**
-    In step [2], if the ‘`version`' is greater than 101, the value of ‘`strings`' is determined through ‘`readInt`'. Therefore, by setting the ‘`version`' to greater than 101, the ‘`strings`' value can be set greater than the array size of 7, causing a stack buffer overflow.
+    In step [2], if the ‘`version`' is greater than 101, the value of ‘`strings`' is determined through ‘`readInt`'.
+    Therefore, by setting the ‘`version`' to greater than 101, the ‘`strings`' value can be set greater than the array size of 7,
+    causing a stack buffer overflow.
     3. **Injection of Malicious Data into Buffer:**
     In step [3], an attacker can input desired values into the buffer.
     
-    In the ‘`importScore`' function within the ‘`src/importexport/guitarpro/internal/importgtp.cpp`' file, the GuitarPro file is parsed. This function verifies the signature and version of the GuitarPro file and then parses the data using the appropriate ‘`read`' function based on the version. If the version is 1.??, it calls the vulnerable ‘`GuitarPro1::read`' function.
+    In the ‘`importScore`' function within the ‘`src/importexport/guitarpro/internal/importgtp.cpp`' file,
+    the GuitarPro file is parsed. This function verifies the signature and version of the GuitarPro
+    file and then parses the data using the appropriate ‘`read`' function based on the version.
+    If the version is 1.??, it calls the vulnerable ‘`GuitarPro1::read`' function.
     
-    To prevent this vulnerability, add code to compare the ‘`strings`' value with ‘`GP_MAX_STRING_NUMBER`' after receiving the ‘`strings`' value as input. If the ‘`strings`' value is greater than the buffer size, handle the exception accordingly.
+    To prevent this vulnerability, add code to compare the ‘`strings`' value with ‘`GP_MAX_STRING_NUMBER`'
+    after receiving the ‘`strings`' value as input. If the ‘`strings`' value is greater than the buffer size,
+    handle the exception accordingly.
     
     Below is the ‘`importScore`' function from the ‘`src/importexport/guitarpro/internal/importgtp.cpp`' file mentioned above.
     
@@ -139,11 +147,12 @@ MuseScore Arbitrary Code Execution Vulnerability Due to Stack Buffer Overflow
     ## Proof-of-Concept Details
     
     - **musescore_exploit_doubleclick.gtp**: This file can be verified by double-clicking it to run the program in MuseScore.
-    - **musescore_exploit_inopen.gtp**: This file can be verified by first launching the MuseScore program, then navigating to File → Open in the top left, and opening the file.
+    - **musescore_exploit_inopen.gtp**: This file can be verified by first launching the MuseScore program,
+    then navigating to File → Open in the top left, and opening the file.
     
     The proof-of-concept is accompanied by demonstration videos. For verification steps, please refer to the demonstration videos.
-    
     Proof-of-concept files and videos are attached.
 
 # code patch
+It has been patched in MuseScore Studio 64-bit ver 4.4.4
 https://github.com/musescore/MuseScore/commit/0630461b734201db24139b0dc1657371fce41fb9
