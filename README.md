@@ -154,6 +154,10 @@ then navigating to File → Open in the top left, and opening the file.
 The proof-of-concept is accompanied by demonstration videos. For verification steps, please refer to the demonstration videos.
 Proof-of-concept files and videos are attached.
 
+[musescore_exploit.zip](https://github.com/user-attachments/files/19185732/musescore_exploit.zip)
+https://github.com/user-attachments/assets/4d3624fd-027e-4a58-8c91-123e530f1ffe
+
+
 # code patch
 It has been patched in MuseScore Studio 64-bit ver 4.4.4
 https://github.com/musescore/MuseScore/commit/0630461b734201db24139b0dc1657371fce41fb9
