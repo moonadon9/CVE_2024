@@ -5,26 +5,25 @@ MuseScore Arbitrary Code Execution Vulnerability Due to Stack Buffer Overflow
     
 # High-level overview of the vulnerability and the possible effect of using it
     
-    A critical vulnerability has been identified in the ‘tuning’ array within the ‘GuitarPro1::read’ function in the ‘importgtp.cpp’ file.
-    This stack buffer overflow can be exploited by attackers to execute arbitrary code, potentially leading to severe security issues.
+A critical vulnerability has been identified in the ‘tuning’ array within the ‘GuitarPro1::read’ function in the ‘importgtp.cpp’ file.
+This stack buffer overflow can be exploited by attackers to execute arbitrary code, potentially leading to severe security issues.
     
-    Exploiting this vulnerability allows attackers to gain control of the system, resulting in:
+Exploiting this vulnerability allows attackers to gain control of the system, resulting in:
     
-    - Sensitive data leakage
-    - System instability
-    - Installation of malicious programs
+- Sensitive data leakage
+- System instability
+- Installation of malicious programs
     
-    It is essential to address and fix this vulnerability promptly to prevent potential security breaches.
+It is essential to address and fix this vulnerability promptly to prevent potential security breaches.
     
 # Exact product that was found to be vulnerable including complete version information
     
-    **MuseScore Studio 64-bit ver 4.3.2**
-    
-    **Proof Environment : windows10, windows11**
+**MuseScore Studio 64-bit ver 4.3.2**
+**Proof Environment : windows10, windows11**
     
 # Root Cause Analysis (recommended but not required)
     
-    src/importexport/guitarpro/internal/importgtp.cpp
+src/importexport/guitarpro/internal/importgtp.cpp
     
     ```c
     bool GuitarPro1::read(IODevice* io)
