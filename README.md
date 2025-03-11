@@ -155,7 +155,7 @@ The proof-of-concept is accompanied by demonstration videos. For verification st
 Proof-of-concept files and videos are attached.
 
 [musescore_exploit.zip](https://github.com/user-attachments/files/19185732/musescore_exploit.zip)
-https://github.com/user-attachments/assets/4d3624fd-027e-4a58-8c91-123e530f1ffe
+![exploit_inopen](https://github.com/user-attachments/assets/80e139e4-20e1-4e86-99ec-f9d0c9d7e198)
 
 
 # code patch
