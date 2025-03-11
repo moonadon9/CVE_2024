@@ -72,7 +72,7 @@ handle the exception accordingly.
     
 Below is the ‘`importScore`' function from the ‘`src/importexport/guitarpro/internal/importgtp.cpp`' file mentioned above.
     
-```c
+```
 static Err importScore(MasterScore* score, muse::io::IODevice* io, bool experimental = false)
 {
     if (!io->open(IODevice::ReadOnly)) {
@@ -131,7 +131,7 @@ static Err importScore(MasterScore* score, muse::io::IODevice* io, bool experime
             return Err::FileBadFormat;
         }
         readResult = gp->read(io); //guitarpro1::read
-    ```
+```
     
 # Proof-of-Concept
     
