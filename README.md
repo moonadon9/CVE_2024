@@ -25,21 +25,22 @@ It is essential to address and fix this vulnerability promptly to prevent potent
     
 src/importexport/guitarpro/internal/importgtp.cpp
     
-    ```c
-    bool GuitarPro1::read(IODevice* io)
-    {
+```
+bool GuitarPro1::read(IODevice* io)
+{
     
-    		...
+...
     
-        for (size_t i = 0; i < staves; ++i) {
-            int tuning[GP_MAX_STRING_NUMBER];    // [1]
+    for (size_t i = 0; i < staves; ++i) {
+        int tuning[GP_MAX_STRING_NUMBER];    // [1]
     
-            int strings  = version > 101 ? readInt() : 6;    // [2]
-            for (int j = 0; j < strings; ++j) {
-                tuning[j] = readInt();          // [3]
-            }
+        int strings  = version > 101 ? readInt() : 6;    // [2]
+        for (int j = 0; j < strings; ++j) {
+            tuning[j] = readInt();          // [3]
         }
-    ```
+    }
+}
+```
     
     src/importexport/guitarpro/internal/importgtp.h
     
